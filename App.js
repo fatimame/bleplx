@@ -4,8 +4,13 @@
  */
 
 import React, { Component } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View, Button, Alert, TouchableOpacity } from "react-native";
 import { BleManager, Device } from "react-native-ble-plx";
+//import { DeviceEventEmitter } from "react-native";
+//import Beacons from "react-native-beacons-manager";
+//import BluetoothState from "react-native-bluetooth-manager";
+
+//import {createStackNavigator, createAppContainer} from "react-navigation";
 
 type Props = {};
 
@@ -17,6 +22,15 @@ export default class App extends Component<Props> {
 
     //creates a manager for all BLE devices, services, and characteristics
     this.manager = new BleManager();
+      
+    // don't know if this will work but storing location in state of phone
+    //var location="hi";
+      this.state={
+          
+          SampleText : ""
+          
+      };
+      var connected = false;
   }
 
   //checks whether the Bluetooth state of the phone is on or off and prints accordingly
@@ -29,6 +43,16 @@ export default class App extends Component<Props> {
         console.log("Bluetooth state of phone: OFF");
       }
     }, true);
+    
+//      // request to authorization while app is in use
+//      Beacons.requestWhenInUseAuthorization();
+//
+//      const area = {
+//
+//      };
+//      // Range for beacons inside the region
+//      Beacons.startRangingBeaconsInRegion(area);
+      
   }
 
   //scans for devices
@@ -59,6 +83,7 @@ export default class App extends Component<Props> {
           .connect()
           .then(device => {
             console.log("This phone has been connected to the HC-08 module.");
+            this.connected = true;
             //returns device after confirming that it has discoverable services and characteristics
             return device.discoverAllServicesAndCharacteristics();
           })
@@ -78,7 +103,7 @@ export default class App extends Component<Props> {
       services.forEach((service, i) => {
         console.log("Service UUID: " + service.uuid);
         service.characteristics().then(characteristics => {
-          characteristics.forEach((c, i) => {
+          characteristics.forEachc((c, i) => {
             console.log(
               "Characteristic for this Service: " +
                 c.uuid +
@@ -107,15 +132,61 @@ export default class App extends Component<Props> {
   }
 
   //use the following function to write something to the arduino: this.writeSth("QQ==");
+    
+  // function to find coordinates
+    findCoordinates() {
+        if (connected){
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    //var location = JSON.stringify(position);
+                var location = "Latitude: " + position.coords.latitude +
+                                "\nLongitude: " + position.coords.longitude;
+                this.setState({SampleText: location });
+                console.log(this.location);
+                console.log(position);
+                                                     });
+            }
+        else {
+                Alert.alert('Bluetooth disconnected');
+            }
+    
+    }
+ 
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Hello</Text>
-      </View>
-    );
+  
+    render() {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.welcome}>Hello, press a button!</Text>
+                <View style={styles.button}>
+                  <Button
+                    title="Left Buzzer"
+                    onPress={() => writeSth("QQ==")}
+                    color="#33FFF3"
+                  />
+                </View>
+                <View style={styles.button}>
+                  <Button
+                    title="Right Buzzer"
+                    onPress={() => writeSth("QQ==")}
+                    color="#33FFF3"
+                  />
+                </View>
+                <View style={styles.button}>
+                  <Button
+                    title ="Send Text Message"
+                    color="#33FFF3"
+                  />
+                </View>
+                <TouchableOpacity onPress={() => this.findCoordinates()}>
+                <Text style ={styles.welcome}>Location: {this.state.SampleText} </Text>
+                </TouchableOpacity>
+            </View>
+            );
+      
   }
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -125,8 +196,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5FCFF"
   },
   welcome: {
-    fontSize: 20,
+    fontSize: 30,
     textAlign: "center",
     margin: 10
-  }
+  },
+  button: {
+    fontSize: 20,
+    margin: 20,
+    backgroundColor: "#000000",
+  },
+
 });

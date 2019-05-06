@@ -8,9 +8,14 @@
     "lint": "eslintrc.js"
   },
   "dependencies": {
-    "react": "16.8.3",
-    "react-native": "0.59.3",
-    "react-native-ble-plx": "^1.0.3"
+    "acorn": "^6.1.1",
+    "acorn-jsx": "^5.0.1",
+    "react": "^16.8.6",
+    "react-native": "^0.59.6",
+    "react-native-beacons-manager": "^1.0.7",
+    "react-native-ble-plx": "^1.0.3",
+    "react-native-gesture-handler": "^1.2.1",
+    "react-navigation": "^3.9.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
